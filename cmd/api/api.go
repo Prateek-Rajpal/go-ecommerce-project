@@ -1,6 +1,7 @@
 package main
 
 import (
+	"ecommerce_app/internal/driver"
 	"flag"
 	"fmt"
 	"log"
@@ -50,6 +51,7 @@ func main() {
 	var cfg config
 	flag.IntVar(&cfg.port, "port", 4001, "server port to listen on")
 	flag.StringVar(&cfg.env, "env", "development", "Application environment {development|production}")
+	flag.StringVar(&cfg.db.dsn, "dsn", "postgres://postgres:yourpassword@localhost/postgres?sslmode=disable", "DSN")
 	flag.Parse()
 
 	cfg.stripe.key = os.Getenv("STRIPE_KEY")
@@ -59,6 +61,13 @@ func main() {
 
 	errorLog := log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Llongfile) // for creating error log
 
+	// database connection
+	conn, err := driver.OpenDB(cfg.db.dsn)
+	if err != nil {
+		errorLog.Fatal(err) // exit
+	}
+	defer conn.Close() // close the connection pool after application stops or exits
+
 	app := application{
 		config:   cfg,
 		infoLog:  infoLog,
@@ -66,7 +75,7 @@ func main() {
 		version:  version,
 	}
 
-	err := app.serve()
+	err = app.serve()
 
 	if err != nil {
 		app.errorLog.Println(err)
