@@ -57,7 +57,7 @@ func main() {
 	flag.IntVar(&cfg.port, "port", 4000, "server port to listen on")
 	flag.StringVar(&cfg.env, "env", "development", "Application environment {development|production}")
 	flag.StringVar(&cfg.api, "api", "http://localhost:4001", "URL to api")
-	flag.StringVar(&cfg.db.dsn,"dsn","postgres://postgres:yourpassword@localhost/postgres?sslmode=disable","DSN")
+	flag.StringVar(&cfg.db.dsn,"dsn","postgres://postgres:dbpassword@localhost/postgres?sslmode=disable","DSN")
 	flag.Parse()
 
 	cfg.stripe.key = os.Getenv("STRIPE_KEY")
