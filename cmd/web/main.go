@@ -4,6 +4,7 @@ package main
 
 import (
 	"ecommerce_app/internal/driver"
+	"ecommerce_app/internal/models"
 	"flag"
 	"fmt"
 	"html/template"
@@ -35,6 +36,7 @@ type application struct {
 	errorLog      *log.Logger
 	templateCache map[string]*template.Template
 	version       string
+	DB            models.DBModel
 }
 
 // creating web server
@@ -57,7 +59,7 @@ func main() {
 	flag.IntVar(&cfg.port, "port", 4000, "server port to listen on")
 	flag.StringVar(&cfg.env, "env", "development", "Application environment {development|production}")
 	flag.StringVar(&cfg.api, "api", "http://localhost:4001", "URL to api")
-	flag.StringVar(&cfg.db.dsn,"dsn","postgres://postgres:dbpassword@localhost/postgres?sslmode=disable","DSN")
+	flag.StringVar(&cfg.db.dsn, "dsn", "postgres://postgres:dbpassword@localhost/postgres?sslmode=disable", "DSN")
 	flag.Parse()
 
 	cfg.stripe.key = os.Getenv("STRIPE_KEY")
@@ -68,9 +70,9 @@ func main() {
 	errorLog := log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Llongfile) // for creating error log
 	// database connection
 	conn, err := driver.OpenDB(cfg.db.dsn)
-	if err!= nil {
-        errorLog.Fatal(err) // exit 
-    }
+	if err != nil {
+		errorLog.Fatal(err) // exit
+	}
 	defer conn.Close() // close the connection pool after application stops or exits
 	tc := make(map[string]*template.Template)
 
@@ -80,6 +82,7 @@ func main() {
 		errorLog:      errorLog,
 		templateCache: tc,
 		version:       version,
+		DB:            models.DBModel{DB: conn},
 	}
 
 	err = app.serve()
