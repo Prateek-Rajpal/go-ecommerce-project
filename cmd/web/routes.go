@@ -10,7 +10,7 @@ func (app *application) routes() http.Handler {
 	mux := chi.NewRouter()
 
 	mux.Get("/virtual-terminal", app.VirtualTerminal)
-	mux.Get("/charge-once", app.ChargeOnce)
+	mux.Get("/widget/{id}", app.ChargeOnce)
 	mux.Post("/payment-succeeded", app.PaymentSucceeded)
 
 	// serving from external directory (static directory)

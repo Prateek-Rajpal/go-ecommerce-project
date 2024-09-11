@@ -10,26 +10,37 @@ import (
 
 // templateData stores the template data needed while rendering
 type templateData struct {
-	StringMap       map[string]string
-	IntMap          map[string]int
-	FloatMap        map[string]float32
-	Data            map[string]interface{} // any kind of data
-	CSRFToken       string
-	Flash           string // message that displayed once and then goes away
-	Warning         string
-	Error           string
-	IsAuthenticated int    // is user authenticated
-	API             string // route to our api
-	CSSVersion      string
+	StringMap            map[string]string
+	IntMap               map[string]int
+	FloatMap             map[string]float32
+	Data                 map[string]interface{} // any kind of data
+	CSRFToken            string
+	Flash                string // message that displayed once and then goes away
+	Warning              string
+	Error                string
+	IsAuthenticated      int    // is user authenticated
+	API                  string // route to our api
+	CSSVersion           string
+	StripeSecretKey      string 
+	StripePublishableKey string
 }
 
-var functions = template.FuncMap{}
+var functions = template.FuncMap{
+	"formatCurrency": formatCurrency,
+}
+
+func formatCurrency(n int) string {
+	f := float32(n / 100)
+	return fmt.Sprintf("$%.2f", f)
+}
 
 //go:embed templates
 var templateFs embed.FS // go embed is a Go directive that tells the Go toolchain to embed the files and directories within the "templates" directory into the variable "templateFs." This allows us to compile my application, including all of its associated templates into a single binary.
 
 func (app *application) addDefaultData(td *templateData) *templateData {
-	td.API = app.config.api 
+	td.API = app.config.api
+	td.StripeSecretKey = app.config.stripe.secret
+	td.StripePublishableKey = app.config.stripe.key
 	return td
 }
 

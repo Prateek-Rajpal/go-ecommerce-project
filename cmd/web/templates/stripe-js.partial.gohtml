@@ -11,7 +11,7 @@
     const payButton = document.getElementById("pay-button");
     // for show processing loader when someone clicks on charge card
     const processing = document.getElementById("processing-payment");    
-    stripe = Stripe("{{index .StringMap "publishable_key"}}"); // create an instance of the Stripe object. The Stripe object is our entrypoint to the rest of the Stripe.js SDK.
+    stripe = Stripe("{{.StripePublishableKey}}"); // create an instance of the Stripe object. The Stripe object is our entrypoint to the rest of the Stripe.js SDK.
     
     function hidePayButton(){
         payButton.classList.add("d-none") // hiding pay-button so that user don't click on it twice to charge the credit card
